@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>缤纷消防知识大闯关</title>
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"微软雅黑",Microsoft YaHei;
+}
+
+body{
+  min-height:100vh;
+  transition:background .7s ease;
+  padding:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:24px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* ===== 章节背景 ===== */
+.scene-bg{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.35;
+  z-index:1;
+  background-size:cover;
+}
+
+.chap0{background:linear-gradient(135deg,#fff8e0,#ffe6cc);}
+.scene-kitchen{
+  display:none;
+  background-image:
+    radial-gradient(#ffbc70 14%,transparent 15%),
+    linear-gradient(#fff 70%,#c99c7a 72%),
+    repeating-linear-gradient(90deg,#b8b8b8 0 4px,transparent 4px 30px);
+}
+
+.chap1{background:linear-gradient(135deg,#f3eeff,#e2d4ff);}
+.scene-bedroom{
+  display:none;
+  background-image:
+    radial-gradient(#d4bfff 16%,transparent 17%),
+    linear-gradient(#f0ebff 63%,#cbb6f0 65%);
+}
+
+.chap2{background:linear-gradient(135deg,#e6f4ff,#b8e0ff);}
+.scene-school{
+  display:none;
+  background-image:
+    linear-gradient(#d0e6fc 66%,#5798d8 68%),
+    repeating-linear-gradient(90deg,transparent 0 11%,#4a88c7 11% 13%,transparent 13% 24%),
+    linear-gradient(#5fc45f 0 10%);
+}
+
+.chap3{background:linear-gradient(135deg,#ffe9e9,#ffd0d0);}
+.scene-building{
+  display:none;
+  background-image:linear-gradient(#ffe2e2 68%,#d89c9c 70%);
+}
+
+.chap4{background:linear-gradient(135deg,#fffbe0,#ffe8b8);}
+.scene-mall{
+  display:none;
+  background-image:
+    radial-gradient(#ffdd70 9%,transparent 10%),
+    linear-gradient(#f7d498 72%,#e8b270 74%);
+  background-size:130px 130px,100% 100%;
+}
+
+/* ===== 消防员 ===== */
+.fireman-left{
+  position:relative;
+  z-index:10;
+  width:150px;
+  height:220px;
+  flex-shrink:0;
+}
+
+.fireman-left img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  border-radius:16px;
+  filter:drop-shadow(0 8px 14px rgba(0,0,0,.25));
+}
+
+/* 火焰伤害 */
+.flame-wrap{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+  z-index:20;
+}
+
+.flame-wrap.show{
+  animation:burn .8s ease-in-out;
+}
+
+@keyframes burn{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.18);filter:brightness(1.4) saturate(1.6);}
+  100%{transform:scale(1);}
+}
+
+.flame{
+  position:absolute;
+  border-radius:50% 50% 40% 40%;
+  background:radial-gradient(#fff930,#ffbb00,#ff3300);
+  filter:blur(.5px);
+}
+
+.flame.f1{width:34px;height:40px;left:20px;bottom:40px;}
+.flame.f2{width:38px;height:48px;left:42px;bottom:48px;}
+.flame.f3{width:32px;height:38px;left:68px;bottom:34px;}
+
+/* 抖动 */
+.hurt-shake{
+  animation:shake .7s ease-in-out;
+}
+
+@keyframes shake{
+  0%,100%{transform:translateX(0) rotate(0);}
+  25%{transform:translateX(-10px) rotate(-2deg);}
+  50%{transform:translateX(10px) rotate(2deg);}
+  75%{transform:translateX(-10px) rotate(-2deg);}
+}
+
+/* ===== 答题卡 ===== */
+.game-card{
+  background:#fff;
+  border-radius:22px;
+  padding:18px;
+  width:340px;
+  z-index:5;
+  box-shadow:0 6px 24px rgba(0,0,0,.12);
+  border:2px solid #ffece0;
+}
+
+.top-info{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:16px;
+  font-size:14px;
+  font-weight:500;
+  color:#222;
+}
+
+.heart-text{
+  font-size:22px;
+  letter-spacing:2px;
+}
+
+.chap-title{
+  text-align:center;
+  font-size:18px;
+  font-weight:bold;
+  color:#d62812;
+  margin-bottom:16px;
+}
+
+.question-text{
+  font-size:16px;
+  line-height:1.65;
+  margin-bottom:18px;
+  color:#111;
+}
+
+.answer-btn{
+  width:100%;
+  padding:13px 15px;
+  margin:8px 0;
+  border:2px solid #eee;
+  border-radius:12px;
+  background:linear-gradient(#fff,#f8f8f8);
+  text-align:left;
+  font-size:15px;
+  color:#222;
+  cursor:pointer;
+  transition:.25s ease;
+  user-select:none;
+}
+
+.answer-btn:hover{
+  background:linear-gradient(#e6f2ff,#d0e4ff);
+  border-color:#4088e8;
+  transform:translateY(-1px);
+}
+
+.answer-btn:active{
+  transform:scale(.98);
+}
+
+.answer-btn.disabled{
+  pointer-events:none;
+  opacity:.7;
+}
+
+/* ===== 弹窗 ===== */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:30;
+}
+
+.modal-inner{
+  background:#fff;
+  padding:28px;
+  border-radius:24px;
+  width:min(100%,340px);
+  text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,.25);
+}
+
+.modal h3{
+  margin-bottom:10px;
+  font-size:20px;
+  color:#111;
+}
+
+.modal-desc{
+  color:#555;
+  margin-bottom:20px;
+  font-size:15px;
+  line-height:1.6;
+}
+
+.operate-btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  color:#fff;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.next-chap{
+  background:linear-gradient(#08bb78,#02995e);
+  margin-bottom:10px;
+}
+
+.restart{
+  background:linear-gradient(#f75040,#dd2c1c);
+}
+
+/* ===== 得分面板 ===== */
+.score-bar{
+  text-align:center;
+  font-size:14px;
+  color:#666;
+  margin-bottom:12px;
+  font-weight:500;
+}
+
+/* ===== 结果提示 ===== */
+.result-tip{
+  text-align:center;
+  font-size:16px;
+  font-weight:bold;
+  margin-top:10px;
+  height:24px;
+  opacity:0;
+  transition:opacity .3s;
+}
+
+.result-tip.show{
+  opacity:1;
+}
+
+.result-tip.right{
+  color:#08bb78;
+}
+
+.result-tip.wrong{
+  color:#f75040;
+}
+
+/* ===== 排行榜弹窗额外样式 ===== */
+.rank-list{
+  text-align:left;
+  margin:12px 0;
+  font-size:14px;
+  line-height:2;
+}
+
+.rank-list b{
+  color:#d62812;
+}
+
+/* ===== 响应式 ===== */
+@media(max-width:768px){
+  body{
+    flex-direction:column;
+    gap:18px;
+  }
+  .game-card{
+    width:100%;
+  }
+}
+</style>
+</head>
+
+<body class="chap0">
+
+<!-- 场景 -->
+<div class="scene-bg scene-kitchen" id="scene0"></div>
+<div class="scene-bg scene-bedroom" id="scene1"></div>
+<div class="scene-bg scene-school" id="scene2"></div>
+<div class="scene-bg scene-building" id="scene3"></div>
+<div class="scene-bg scene-mall" id="scene4"></div>
+
+<!-- 消防员 -->
+<div class="fireman-left">
+  <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 280'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23e63030'/%3E%3Cstop offset='1' stop-color='%23b71c1c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='60' y='0' width='80' height='55' rx='8' fill='%23ff8f00'/%3E%3Crect x='50' y='50' width='100' height='120' rx='12' fill='url(%23g)'/%3E%3Crect x='55' y='55' width='30' height='35' rx='4' fill='%23fff' opacity='.9'/%3E%3Crect x='115' y='55' width='30' height='35' rx='4' fill='%23fff' opacity='.9'/%3E%3Cline x1='70' y1='100' x2='85' y2='100' stroke='%23fff' stroke-width='2' opacity='.7'/%3E%3Cline x1='115' y1='100' x2='130' y2='100' stroke='%23fff' stroke-width='2' opacity='.7'/%3E%3Crect x='80' y='130' width='40' height='50' rx='6' fill='%23fff' opacity='.25'/%3E%3Crect x='55' y='170' width='90' height='110' rx='8' fill='%231a237e'/%3E%3Crect x='80' y='190' width='40' height='60' rx='6' fill='%23ffcc02'/%3E%3Cline x1='100' y1='190' x2='100' y2='250' stroke='%23ffcc02' stroke-width='3'/%3E%3Crect x='55' y='255' width='35' height='25' rx='4' fill='%23ff8f00'/%3E%3Crect x='110' y='255' width='35' height='25' rx='4' fill='%23ff8f00'/%3E%3Ccircle cx='100' cy='35' r='18' fill='%23ffb74d' opacity='.8'/%3E%3C/svg%3E" alt="消防员" id="fireMan">
+  <div class="flame-wrap" id="fireAni">
+    <div class="flame f1"></div>
+    <div class="flame f2"></div>
+    <div class="flame f3"></div>
+  </div>
+</div>
+
+<!-- 答题区 -->
+<div class="game-card" id="box">
+  <div class="top-info">
+    <div id="pageNum">第1题 / 本章5题</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="heart-text" id="hpShow">❤️❤️❤️</span>
+      <button id="soundToggle" onclick="toggleSound()" 
+              style="border:none;background:none;font-size:20px;cursor:pointer;">🔊</button>
+    </div>
+  </div>
+  <div class="score-bar" id="scoreBar">当前得分：0 分</div>
+  <div class="chap-title" id="chapName">第一章 · 厨房火场</div>
+  <div class="question-text" id="qText"></div>
+  <div id="optionsWrap"></div>
+  <div class="result-tip" id="resultTip"></div>
+</div>
+
+<!-- 通关 -->
+<div class="modal" id="winPop">
+  <div class="modal-inner">
+    <h3>🎉 本章全部答对，成功通关！</h3>
+    <p class="modal-desc">掌握更多消防安全知识，前往下一章节继续学习</p>
+    <button class="operate-btn next-chap" onclick="nextChapter()">开启下一章节</button>
+  </div>
+</div>
+
+<!-- 失败 -->
+<div class="modal" id="losePop">
+  <div class="modal-inner">
+    <h3>😢 生命值全部耗尽，闯关失败</h3>
+    <p class="modal-desc">牢记消防安全小常识，重新挑战闯关吧！</p>
+    <button class="operate-btn restart" onclick="reloadChapter()">重新闯关本章</button>
+  </div>
+</div>
+
+<!-- 成绩面板 -->
+<div class="modal" id="rankPop">
+  <div class="modal-inner">
+    <h3>🏆 我的成绩</h3>
+    <div class="rank-list" id="rankContent"></div>
+    <button class="operate-btn next-chap" onclick="$('rankPop').style.display='none'" style="margin-bottom:10px;">关闭</button>
+    <br>
+    <button onclick="resetAll()" style="border:none;background:none;color:#999;font-size:13px;cursor:pointer;margin-top:8px;">重置全部数据</button>
+  </div>
+</div>
+
+<!-- 全部通关 -->
+<div class="modal" id="allClearPop">
+  <div class="modal-inner">
+    <h3>🏅 恭喜全部通关！</h3>
+    <p class="modal-desc">你是满分消防安全小卫士！<br>总得分：<b id="finalScore">0</b> 分</p>
+    <button class="operate-btn next-chap" onclick="resetAll();$('allClearPop').style.display='none'">再玩一次</button>
+  </div>
+</div>
+
+<script>
+/* ========= 音效管理（Web Audio API 合成，无需外部文件） ========= */
+const AudioMgr = {
+  enabled: true,
+  ctx: null,
+
+  init() {
+    // 延迟初始化 AudioContext（需要用户交互后才能创建）
+    this.ctx = null;
+  },
+
+  ensureCtx() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+    return this.ctx;
+  },
+
+  play(name) {
+    if (!this.enabled) return;
+    try {
+      const ctx = this.ensureCtx();
+      switch (name) {
+        case 'correct': this._playCorrect(ctx); break;
+        case 'wrong':   this._playWrong(ctx); break;
+        case 'burn':    this._playBurn(ctx); break;
+        case 'win':     this._playWin(ctx); break;
+        case 'lose':    this._playLose(ctx); break;
+      }
+    } catch (e) {
+      // 音效失败不影响游戏
+    }
+  },
+
+  _playCorrect(ctx) {
+    // 清脆上升音调 C5 -> E5
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523.25, t);
+    osc.frequency.linearRampToValueAtTime(659.25, t + 0.15);
+    gain.gain.setValueAtTime(0.25, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.4);
+  },
+
+  _playWrong(ctx) {
+    // 低沉蜂鸣 180Hz
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(180, t);
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.35);
+  },
+
+  _playBurn(ctx) {
+    // 火焰劈啪声（白噪声 + 带通滤波）
+    const t = ctx.currentTime;
+    const bufferSize = ctx.sampleRate * 0.5;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.3 * (1 - i / bufferSize);
+      // 添加劈啪脉冲
+      if (Math.random() < 0.03) {
+        data[i] *= 4;
+      }
+    }
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 3000;
+    filter.Q.value = 0.5;
+    const gain = ctx.createGain();
+    gain.gain.value = 0.35;
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start(t);
+    source.stop(t + 0.5);
+  },
+
+  _playWin(ctx) {
+    // 胜利号角 C-E-G-C
+    const t = ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    const durs = [0.12, 0.12, 0.12, 0.3];
+    let offset = t;
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.22, offset);
+      gain.gain.exponentialRampToValueAtTime(0.01, offset + durs[i] * 0.9);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(offset);
+      osc.stop(offset + durs[i]);
+      offset += durs[i];
+    });
+  },
+
+  _playLose(ctx) {
+    // 悲伤下降 G-F-E-C
+    const t = ctx.currentTime;
+    const notes = [392.00, 349.23, 329.63, 261.63];
+    const durs = [0.12, 0.12, 0.12, 0.25];
+    let offset = t;
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.2, offset);
+      gain.gain.exponentialRampToValueAtTime(0.01, offset + durs[i] * 0.85);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(offset);
+      osc.stop(offset + durs[i]);
+      offset += durs[i];
+    });
+  },
+
+  toggle() {
+    this.enabled = !this.enabled;
+    return this.enabled;
+  }
+};
+
+function toggleSound(){
+  const on = AudioMgr.toggle();
+  document.getElementById('soundToggle').innerText = on ? '🔊' : '🔇';
+}
+
+/* ========= 题库 ========= */
+const questionBank = [
+  [
+    {q:"炒菜油锅起火正确处理方式？", options:["直接泼水浇灭","快速盖上锅盖隔绝空气","开窗吹风降温"], ans:1},
+    {q:"闻到燃气漏气第一步操作？", options:["开灯寻找漏气位置","关闭燃气总阀门","点火测试漏气点"], ans:1},
+    {q:"燃气泄漏绝对不能做的事？", options:["开窗通风换气","开关电灯、电器","到户外电话报修"], ans:1},
+    {q:"食用油严禁靠近什么物品？", options:["灶台明火","橱柜角落","冰箱内部"], ans:0},
+    {q:"厨房纸箱废纸正确摆放位置？", options:["灶台旁边","远离明火区域","紧贴燃气管道"], ans:1}
+  ],
+  [
+    {q:"手机整夜放枕头下充电有什么危险？", options:["完全安全无隐患","高温发热引发火灾","充电速度更快"], ans:1},
+    {q:"床头可以长期摆放的物品？", options:["电热毯","充电小台灯","点燃的蜡烛"], ans:1},
+    {q:"多个大功率电器共用一个插排会？", options:["线路过载短路起火","提升充电速度","不会产生危险"], ans:0},
+    {q:"长期离家不用断电的家电？", options:["手机充电器","冰箱","电取暖器"], ans:1},
+    {q:"床上、沙发能否吸烟？", options:["小心一点即可","严禁吸烟，极易引燃布料"], ans:1}
+  ],
+  [
+    {q:"教室插座禁止插入哪种大功率电器？", options:["台灯充电器","电热锅、暖手宝"], ans:1},
+    {q:"楼道安全出口堆放杂物是否合规？", options:["临时堆放没问题","不允许，堵塞逃生通道"], ans:1},
+    {q:"实验室酒精起火适用哪种灭火工具？", options:["干粉灭火器","直接用水泼洒"], ans:0},
+    {q:"校园火警响起正确做法？", options:["弯腰有序撤离教学楼","先收拾书包再离开","拥挤争抢乱跑下楼"], ans:0},
+    {q:"火灾疏散下楼梯正确行为？", options:["争抢推挤快速下楼","靠右安静有序慢行"], ans:1}
+  ],
+  [
+    {q:"楼房火灾逃生可以乘坐电梯吗？", options:["电梯下楼速度更快","绝对不能，容易被困"], ans:1},
+    {q:"浓烟楼道标准逃生姿势？", options:["直立快速奔跑","弯腰捂口鼻匍匐前进"], ans:1},
+    {q:"房门发烫、门外有大火该怎么做？", options:["直接开门冲出去","封堵门缝窗边等待救援"], ans:1},
+    {q:"阳台大量堆放纸箱家具是否危险？", options:["易燃物阻碍救援，极度危险","可以正常存放杂物"], ans:0},
+    {q:"不属于家用消防器材的是？", options:["防烟面罩","干粉灭火器","汽油"], ans:2}
+  ],
+  [
+    {q:"进入商场第一件事观察什么？", options:["商品价格标签","绿色安全出口指示牌"], ans:1},
+    {q:"商场起火需要避开哪些设施？", options:["玻璃橱窗、装饰护栏","疏散安全通道"], ans:0},
+    {q:"商场与家人走散正确做法？", options:["原地寻找工作人员求助","独自到处乱跑寻找"], ans:0},
+    {q:"安全疏散指示牌标准发光颜色？", options:["绿色","红色","黄色"], ans:0},
+    {q:"火场疏散错误行为是？", options:["不折返拿贵重物品","返回店内取回背包财物"], ans:1}
+  ]
+];
+
+const chapterTitles = [
+  "第一章 · 厨房火场",
+  "第二章 · 卧室居家",
+  "第三章 · 校园教学楼",
+  "第四章 · 高层居民楼道",
+  "第五章 · 大型购物商场"
+];
+
+/* ========= 状态 ========= */
+let nowChap = 0;
+let nowQ = 0;
+let life = 3;
+let score = 0;
+let chapterBest = [0,0,0,0,0];
+let totalCorrect = 0;
+let totalWrong = 0;
+let locking = false;
+
+/* ========= DOM ========= */
+const $ = id => document.getElementById(id);
+const fireMan = $("fireMan");
+const fireAni = $("fireAni");
+const optionsWrap = $("optionsWrap");
+
+/* ========= 工具函数 ========= */
+function updateHP(){
+  $("hpShow").innerText = "❤️".repeat(life) + "🖤".repeat(3 - life);
+}
+
+function updateScore(){
+  $("scoreBar").innerText = `当前得分：${score} 分`;
+}
+
+function switchScene(){
+  for(let i=0;i<5;i++) $(`scene${i}`).style.display = "none";
+  $(`scene${nowChap}`).style.display = "block";
+  document.body.className = `chap${nowChap}`;
+}
+
+function showHurt(){
+  fireMan.classList.add("hurt-shake");
+  fireAni.classList.add("show");
+  setTimeout(()=>{
+    fireMan.classList.remove("hurt-shake");
+    fireAni.classList.remove("show");
+  },800);
+}
+
+function showResultTip(text, isRight){
+  const tip = $("resultTip");
+  tip.innerText = text;
+  tip.className = "result-tip show " + (isRight ? "right" : "wrong");
+  setTimeout(()=>{
+    tip.className = "result-tip";
+  },1500);
+}
+
+/* ========= 加载题目 ========= */
+function loadQuestion(){
+  locking = false;
+  switchScene();
+
+  const q = questionBank[nowChap][nowQ];
+  $("chapName").innerText = chapterTitles[nowChap];
+  $("pageNum").innerText = `第${nowQ+1}题 / 本章5题`;
+  $("qText").innerText = q.q;
+
+  optionsWrap.innerHTML = "";
+  q.options.forEach((text, index)=>{
+    const btn = document.createElement("button");
+    btn.className = "answer-btn";
+    btn.innerText = `${String.fromCharCode(65+index)}. ${text}`;
+    btn.onclick = () => handleAnswer(index);
+    optionsWrap.appendChild(btn);
+  });
+
+  updateHP();
+  updateScore();
+}
+
+/* ========= 答题逻辑 ========= */
+function handleAnswer(index){
+  if(locking) return;
+  locking = true;
+
+  const q = questionBank[nowChap][nowQ];
+
+  if(index !== q.ans){
+    life--;
+    totalWrong++;
+    AudioMgr.play('wrong');
+    AudioMgr.play('burn');
+    showHurt();
+    showResultTip('❌ 回答错误！', false);
+    updateHP();
+
+    if(life <= 0){
+      setTimeout(()=> {
+        AudioMgr.play('lose');
+        $("losePop").style.display = "flex";
+      }, 1000);
+      return;
+    }
+  } else {
+    let add = 20;
+    if(life === 3) add += 10;
+    score += add;
+    totalCorrect++;
+    AudioMgr.play('correct');
+    showResultTip(`✅ 回答正确！+${add}分`, true);
+    updateScore();
+  }
+
+  nowQ++;
+  if(nowQ >= 5){
+    if(score > chapterBest[nowChap]){
+      chapterBest[nowChap] = score;
+    }
+    setTimeout(()=> {
+      AudioMgr.play('win');
+      if(nowChap >= 4){
+        $("finalScore").innerText = score;
+        $("allClearPop").style.display = "flex";
+      } else {
+        $("winPop").style.display = "flex";
+      }
+    }, 1200);
+    return;
+  }
+
+  setTimeout(loadQuestion, 1200);
+}
+
+/* ========= 章节控制 ========= */
+function nextChapter(){
+  $("winPop").style.display = "none";
+  nowChap++;
+  nowQ = 0;
+  life = 3;
+  loadQuestion();
+}
+
+function reloadChapter(){
+  $("losePop").style.display = "none";
+  nowQ = 0;
+  life = 3;
+  loadQuestion();
+}
+
+function resetAll(){
+  nowChap = 0;
+  nowQ = 0;
+  life = 3;
+  score = 0;
+  chapterBest = [0,0,0,0,0];
+  totalCorrect = 0;
+  totalWrong = 0;
+  loadQuestion();
+}
+
+function showRank(){
+  let html = `<b>总得分：</b>${score} 分<br>`;
+  html += `<b>答对：</b>${totalCorrect} 题 | <b>答错：</b>${totalWrong} 题<br><br>`;
+  html += `<b>各章最高分：</b><br>`;
+  chapterBest.forEach((s,i)=>{
+    html += `&nbsp;&nbsp;${chapterTitles[i]}：${s} 分<br>`;
+  });
+  $('rankContent').innerHTML = html;
+  $('rankPop').style.display = 'flex';
+}
+
+/* ========= 键盘支持 ========= */
+document.addEventListener("keydown", e=>{
+  if(e.key >= "1" && e.key <= "3") handleAnswer(e.key - 1);
+  if(["a","b","c"].includes(e.key)) handleAnswer(e.key.charCodeAt(0)-97);
+  if(e.key === "r" || e.key === "R") showRank();
+});
+
+/* ========= 启动 ========= */
+window.onload = loadQuestion;
+</script>
+</body>
+</html>
